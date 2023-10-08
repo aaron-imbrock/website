@@ -1,27 +1,28 @@
-# Pull base image
-FROM python:3.11-slim-buster
+# pull official base image
+FROM python:3.11.4-slim-buster
 
-# Set environment variables
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Create and set work directory called `app`
-RUN mkdir -p /code
-WORKDIR /code
+# install system dependencies
+RUN apt-get update && apt-get install -y netcat
 
-# Install dependencies
-COPY requirements.txt /tmp/requirements.txt
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN set -ex && \
-    pip install --upgrade pip && \
-    pip install -r /tmp/requirements.txt && \
-    rm -rf /root/.cache/
+# copy entrypoint.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
 
-# Copy local project
-COPY . /code/
+# copy project
+COPY . .
 
-# Expose port 8000
-EXPOSE 8000
-
-# Use gunicorn on port 8000
-CMD ["gunicorn", "--bind", ":8000", "--workers", "2", "django_project.wsgi"]
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

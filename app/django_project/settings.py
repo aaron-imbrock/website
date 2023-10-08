@@ -1,16 +1,23 @@
 from pathlib import Path
+import socket
+from environs import Env
+
+env = Env()
+env.read_env()
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY
-SECRET_KEY = "django-insecure-0peo@#x9jur3!h$ryje!$879xww8y1y66jx!%*#ymhg&jkozs2"
+SECRET_KEY = env.str("SECRET_KEY")
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = [
@@ -71,24 +78,24 @@ TEMPLATES = [
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-# For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "postgres",
-#         "USER": "postgres",
-#         "PASSWORD": "postgres",
-#         "HOST": "db",  # set in docker-compose.yml
-#         "PORT": 5432,  # default postgres port
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+# For Docker/PostgreSQL usage uncomment this and comment the DATABASES config above
+DATABASES = {
+    "default": {
+        "ENGINE": env.str("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": env.str("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": env.str("SQL_USER", "user"),
+        "PASSWORD": env.str("SQL_PASSWORD", "password"),
+        "HOST": env.str("SQL_HOST", "localhost"),
+        "PORT": env.int("SQL_PORT", "5432"),
+    }
+}
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -151,7 +158,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # django-debug-toolbar
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html
 # https://docs.djangoproject.com/en/dev/ref/settings/#internal-ips
-INTERNAL_IPS = ["127.0.0.1"]
+INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
 
 # https://docs.djangoproject.com/en/dev/topics/auth/customizing/#substituting-a-custom-user-model
 AUTH_USER_MODEL = "accounts.CustomUser"
@@ -178,3 +185,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
+
+
+if DEBUG:
+    from pprint import pprint
+    pprint(env.dump(), indent=2)

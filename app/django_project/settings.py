@@ -18,6 +18,7 @@ DEBUG = env.bool("DEBUG", default=False)
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = [
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     # Local
     "accounts",
     "pages",
+    "upload",
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
@@ -137,6 +139,9 @@ STATIC_URL = "/static/"
 
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [BASE_DIR / "static"]
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
+
 
 # https://whitenoise.readthedocs.io/en/latest/django.html
 STORAGES = {

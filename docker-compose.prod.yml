@@ -5,6 +5,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
+    image: 427525052004.dssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDFu7Mw1MdHol6OnaKgwZzYkd0wcj4yfaixLcSaVPSfgvLE5/gDXsjfobGSdtNXIkWaAMFcnMkNz5Ua61m1svJqN36qk1a01RjOo0CV/Yr3B0KOAqu6dChU7E908NupAJXOu8In+n066OfDFOqrZdeHayv7FQM0c+8jChclAnYvxm4pVL7ozXEqo7P5k30DLTkQIU/w5fYejSL4GN3zxNP0VoPDwkBayCpv9Vd8WUdD6l/lw3CeT6u6f+/+RPzthAOIGbpX2CwGTRWwRo4/4uVR1wGoYMLuxjPE9bIbY7DJPQFnrAg6qUSkkaJjP0n/wNPulgQu1GMxYXZg8Y0gR8wtRUBYwGhsLg7qycA5ewXgPk5tdK2OyUE1EcpwDIPHWeX//hKtIS/88QejkcWiz+8Lyo14a2MWZIRohvtBUhFbt+lxFHuU35hKoH4YYwVMim4a51HKZOu7TmwMbL6oDlt85EkhhVC44XRCFe9cEyrXmWZAj9t7DybuIyhmwv9kiUE= ubuntu@ip-172-31-46-122kr.ecr.us-east-1.amazonaws.com/django-ec2:web
     command: gunicorn django_project.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/home/app/web/staticfiles
